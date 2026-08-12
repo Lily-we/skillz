@@ -24,8 +24,8 @@ key" → "Create API key". No billing needed for the free tier.
 ## What's here so far
 
 - `core/models.py` — the data model: Competency (base vs company-specific),
-  AssessmentTask, Candidate, AssessmentAnswer, AssessmentResult,
-  LearningModule, LearningPathItem
+  AssessmentTask, Candidate (tied 1:1 to a Django User), AssessmentAnswer,
+  AssessmentResult, LearningModule, LearningPathItem
 - `core/services/gemini_service.py` — the only file that calls Gemini.
   Takes a task prompt + rubric + candidate answer, returns structured JSON
   `{score, evidence, gap_reason}`. Falls back to a clearly-labeled mocked
@@ -33,14 +33,26 @@ key" → "Create API key". No billing needed for the free tier.
   demoable without the key.
 - `core/management/commands/seed_company_x.py` — seeds the whole Company X
   profile + assessment tasks + learning module pool. Safe to rerun.
+- Full page flow, all working end to end (verified via curl, not just
+  "no errors"):
+  - `/` — landing
+  - `/register/`, `/login/`, `/logout/` — real Django auth; a Candidate
+    is auto-created for every new User via a signal
+  - `/requirements/` — Company X's 11 competencies, base vs company-specific
+  - `/assessment/` — the 6 assessed tasks, submits to Gemini (or the mock)
+  - `/gap-profile/` — readiness %, per-competency gap, biggest gap
+  - `/learning-path/` — generated from actual gaps, base gaps before
+    company-specific ones
+  - `/readiness/` — interview handoff screen
+- `core/templates/core/base.html` — Tailwind CDN + tsParticles, dark/light
+  toggle persisted in localStorage, blue-only palette throughout
 
 ## Still to build
 
-- Views/templates for the actual screens (requirements → assessment →
-  gap dashboard → learning path)
-- Deterministic gap-calculation + readiness-score logic wired to real data
-- Learning path generation (Gemini selects/orders from the fixed
-  LearningModule pool per candidate's gaps)
+- Visual polish pass — screens are functionally correct but plain
+- Gemini-assisted module *selection* (currently deterministic ordering
+  by gap size — matches the "should have" tier, not "must have")
+- Reassessment flow
 
 ## Security note
 
