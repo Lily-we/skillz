@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+{% block title %}Requirements — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 lg:px-0 py-16">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-4 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    What does the job actually require?
+  </div>
+
+  <h1 class="font-display font-medium text-4xl md:text-5xl leading-tight mb-3 fade-in">
+    Company X's competency profile
+  </h1>
+  <p class="text-slate-600 dark:text-slate-400 max-w-xl mb-14 fade-in">
+    Synthesized from employer interviews and industry research — not a generic
+    curriculum. Every bar below is the real threshold Company X uses to judge
+    job-readiness for this role.
+  </p>
+
+  <div class="fade-in">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="font-mono text-xs tracking-widest uppercase text-slate-400 dark:text-slate-500">Base</span>
+      <span class="flex-1 h-px bg-slate-200 dark:bg-white/10"></span>
+    </div>
+    <div class="space-y-1 mb-12">
+      {% for c in base_competencies %}
+      <div class="grid grid-cols-[160px_1fr_auto] items-center gap-5 py-3 border-b border-slate-100 dark:border-white/5">
+        <div class="text-sm font-medium">{{ c.name }}</div>
+        <div class="gauge-track bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+          <div class="gauge-tick" style="left: {{ c.required_level|floatformat:0 }}0%"></div>
+        </div>
+        <div class="font-mono text-xs text-blue-600 dark:text-sky-400 text-right">{{ c.required_level }}/5</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="flex items-center gap-3 mb-5">
+      <span class="font-mono text-xs tracking-widest uppercase text-slate-400 dark:text-slate-500">Company-specific</span>
+      <span class="flex-1 h-px bg-slate-200 dark:bg-white/10"></span>
+    </div>
+    <div class="space-y-1 mb-14">
+      {% for c in company_competencies %}
+      <div class="grid grid-cols-[160px_1fr_auto] items-center gap-5 py-3 border-b border-slate-100 dark:border-white/5">
+        <div class="text-sm font-medium">{{ c.name }}</div>
+        <div class="gauge-track bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+          <div class="gauge-tick" style="left: {{ c.required_level|floatformat:0 }}0%"></div>
+        </div>
+        <div class="font-mono text-xs text-blue-600 dark:text-sky-400 text-right">{{ c.required_level }}/5</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="border border-blue-200 dark:border-sky-400/20 bg-blue-50/60 dark:bg-sky-400/5 rounded-2xl p-6 flex gap-4 fade-in">
+    <div class="font-display italic text-2xl text-blue-600 dark:text-sky-400 leading-none">"</div>
+    <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+      These competencies were defined by the employer for this role. Your
+      assessment and learning path are measured against this exact bar —
+      not a generic course.
+    </p>
+  </div>
+
+</div>
+{% endblock %}
