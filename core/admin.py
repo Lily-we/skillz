@@ -24,7 +24,7 @@ class AssessmentTaskAdmin(admin.ModelAdmin):
 
 @admin.register(Candidate)
 class CandidateAdmin(admin.ModelAdmin):
-    list_display = ("name", "created_at")
+    list_display = ("user", "created_at")
 
 
 @admin.register(AssessmentAnswer)

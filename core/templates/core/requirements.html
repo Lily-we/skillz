@@ -52,13 +52,27 @@
     </div>
   </div>
 
-  <div class="border border-blue-200 dark:border-sky-400/20 bg-blue-50/60 dark:bg-sky-400/5 rounded-2xl p-6 flex gap-4 fade-in">
+  <div class="border border-blue-200 dark:border-sky-400/20 bg-blue-50/60 dark:bg-sky-400/5 rounded-2xl p-6 flex gap-4 fade-in mb-10">
     <div class="font-display italic text-2xl text-blue-600 dark:text-sky-400 leading-none">"</div>
     <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
       These competencies were defined by the employer for this role. Your
       assessment and learning path are measured against this exact bar —
       not a generic course.
     </p>
+  </div>
+
+  <div class="fade-in">
+    {% if user.is_authenticated %}
+      <a href="{% url 'assessment' %}"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition">
+        Begin assessment →
+      </a>
+    {% else %}
+      <a href="{% url 'register' %}"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition">
+        Create an account to begin →
+      </a>
+    {% endif %}
   </div>
 
 </div>

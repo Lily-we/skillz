@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% block title %}Your learning path — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 lg:px-0 py-16">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-4 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    Your path to job readiness
+  </div>
+  <h1 class="font-display font-medium text-4xl mb-3 fade-in">Personalized learning path</h1>
+  <p class="text-slate-600 dark:text-slate-400 mb-12 fade-in max-w-xl">
+    Sequenced from your actual gaps — base competencies first, then Company X-specific
+    conventions. You don't repeat what you've already demonstrated.
+  </p>
+
+  {% if not has_gaps %}
+    <div class="border border-emerald-200 dark:border-emerald-400/20 bg-emerald-50/60 dark:bg-emerald-400/5 rounded-2xl p-8 text-center fade-in">
+      <p class="text-emerald-700 dark:text-emerald-400">No gaps found — you meet the bar on every assessed competency.</p>
+    </div>
+  {% else %}
+    <div class="space-y-0 fade-in">
+      {% for item in path_items %}
+      <div class="flex gap-5 py-5 border-b border-slate-100 dark:border-white/5">
+        <div class="w-12 h-12 shrink-0 rounded-full border border-slate-200 dark:border-white/15 flex items-center justify-center font-mono text-sm text-slate-500 dark:text-slate-400">
+          {{ forloop.counter|stringformat:"02d" }}
+        </div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <h4 class="font-display font-semibold text-lg">{{ item.module.title }}</h4>
+            <span class="font-mono text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full border
+              {% if item.module.competency.scope == 'company' %}border-blue-300 dark:border-sky-400/30 text-blue-600 dark:text-sky-400{% else %}border-slate-300 dark:border-white/15 text-slate-400{% endif %}">
+              {% if item.module.competency.scope == 'company' %}Company X-specific{% else %}Base{% endif %}
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">{{ item.module.competency.name }} · {{ item.module.duration_minutes }} min</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-10 p-6 border-l-2 border-blue-600 dark:border-sky-400 bg-white dark:bg-[#10152A] rounded-r-2xl fade-in">
+      <p class="font-display italic text-slate-600 dark:text-slate-400">
+        "Your path was adapted to your current competency profile. You don't need
+        to repeat material you've already demonstrated."
+      </p>
+    </div>
+
+    <a href="{% url 'readiness' %}"
+       class="inline-flex items-center gap-2 mt-10 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition fade-in">
+      See what's next →
+    </a>
+  {% endif %}
+
+</div>
+{% endblock %}

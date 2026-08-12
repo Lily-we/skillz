@@ -1,0 +1,48 @@
+{% extends "core/base.html" %}
+{% load core_extras %}
+{% block title %}Assessment — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 lg:px-0 py-16">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-4 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    Let's find your current level
+  </div>
+  <h1 class="font-display font-medium text-4xl mb-3 fade-in">Practical assessment</h1>
+  <p class="text-slate-600 dark:text-slate-400 mb-12 fade-in">
+    Answer as many as you'd like — you can submit partial answers in demo mode.
+    Each is scored against Company X's rubric, not generic trivia.
+  </p>
+
+  <form method="post" id="assessment-form" class="space-y-6 fade-in">
+    {% csrf_token %}
+    {% for task in tasks %}
+    <div class="border border-slate-200 dark:border-white/10 rounded-2xl p-6 bg-white dark:bg-[#10152A]">
+      <div class="font-mono text-xs uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2">
+        {{ task.competency.name }}
+      </div>
+      <p class="text-sm font-medium mb-4 whitespace-pre-line">{{ task.prompt }}</p>
+      <textarea name="task_{{ task.id }}" rows="4"
+                placeholder="Type your answer here…">{% if task.id in existing %}{{ existing|get_item:task.id }}{% endif %}</textarea>
+    </div>
+    {% endfor %}
+
+    <button type="submit" id="submit-btn"
+            class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition disabled:opacity-60">
+      Complete assessment →
+    </button>
+  </form>
+</div>
+
+<script>
+  // Real Gemini calls run synchronously server-side per task, so this can
+  // take a few seconds for 6 tasks — give some feedback instead of a
+  // frozen button.
+  document.getElementById('assessment-form').addEventListener('submit', function () {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Evaluating your answers…';
+  });
+</script>
+{% endblock %}

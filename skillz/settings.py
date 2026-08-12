@@ -24,6 +24,10 @@ load_dotenv(BASE_DIR / ".env")
 # Your Gemini API key. Set it in a .env file — see .env.example.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "requirements"
+LOGOUT_REDIRECT_URL = "home"
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/

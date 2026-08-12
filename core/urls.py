@@ -1,7 +1,17 @@
+from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from . import views
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path("", views.landing, name="home"),
+    path("register/", views.register, name="register"),
+    path("login/", auth_views.LoginView.as_view(template_name="core/login.html"), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+
+    path("requirements/", views.requirements, name="requirements"),
+    path("assessment/", views.assessment, name="assessment"),
+    path("gap-profile/", views.gap_profile, name="gap_profile"),
+    path("learning-path/", views.learning_path, name="learning_path"),
+    path("readiness/", views.readiness, name="readiness"),
 ]

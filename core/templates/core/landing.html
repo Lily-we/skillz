@@ -1,0 +1,55 @@
+{% extends "core/base.html" %}
+{% block title %}Skillz — Turn skills into career readiness{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 lg:px-0 py-24 md:py-36">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-6 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    Career readiness, measured
+  </div>
+
+  <h1 class="font-display font-medium text-5xl md:text-6xl leading-[1.05] mb-6 fade-in">
+    Turn skills into
+    <span class="italic text-blue-600 dark:text-sky-400">career readiness.</span>
+  </h1>
+
+  <p class="text-lg text-slate-600 dark:text-slate-400 max-w-xl mb-10 fade-in">
+    Learn what employers actually need. Prove what you can do.
+  </p>
+
+  <div class="flex items-center gap-4 mb-20 fade-in">
+    {% if user.is_authenticated %}
+      <a href="{% url 'requirements' %}"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition">
+        Continue to requirements →
+      </a>
+    {% else %}
+      <a href="{% url 'register' %}"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition">
+        Start assessment →
+      </a>
+      <a href="{% url 'requirements' %}"
+         class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-300 dark:border-white/15 hover:border-blue-400 dark:hover:border-sky-400 text-sm font-mono transition">
+        See how it works
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-px bg-slate-200 dark:bg-white/10 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 fade-in">
+    <div class="bg-white dark:bg-[#10152A] p-8">
+      <div class="font-mono text-xs uppercase tracking-widest text-blue-600 dark:text-sky-400 mb-3">For learners</div>
+      <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        Discover your skill gaps and build a personalized path toward your target career.
+      </p>
+    </div>
+    <div class="bg-white dark:bg-[#10152A] p-8">
+      <div class="font-mono text-xs uppercase tracking-widest text-blue-600 dark:text-sky-400 mb-3">For companies</div>
+      <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        Define the competencies you need and identify candidates who can actually demonstrate them.
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

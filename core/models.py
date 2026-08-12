@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 
@@ -50,12 +51,14 @@ class AssessmentTask(models.Model):
 
 
 class Candidate(models.Model):
-    """Deliberately minimal — no auth for the hackathon demo."""
-    name = models.CharField(max_length=100, blank=True, default="Demo candidate")
+    """One per logged-in user. Created automatically on registration."""
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="candidate"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name or f"Candidate #{self.pk}"
+        return self.user.username
 
 
 class AssessmentAnswer(models.Model):
