@@ -92,8 +92,13 @@ def evaluate_answer(task_prompt: str, rubric: str, answer_text: str, required_le
     client = genai.Client(api_key=api_key)
     prompt = _build_prompt(task_prompt, rubric, answer_text)
 
+    # Configurable via env so a future Google model rename doesn't require
+    # a code change — gemini-2.5-flash was deprecated for new API keys as
+    # of mid-2026; gemini-3.6-flash is the current stable default.
+    model_name = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=model_name,
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",
