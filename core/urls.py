@@ -14,4 +14,10 @@ urlpatterns = [
     path("gap-profile/", views.gap_profile, name="gap_profile"),
     path("learning-path/", views.learning_path, name="learning_path"),
     path("readiness/", views.readiness, name="readiness"),
+
+    path("learning/<int:competency_id>/", views.learning, name="learning"),
+    path("practice/<int:competency_id>/", views.practice, name="practice"),
+
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("candidates/<int:candidate_id>/", views.candidate_detail, name="candidate_detail"),
 ]

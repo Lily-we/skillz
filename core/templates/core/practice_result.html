@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+{% block title %}Practice result — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-6 lg:px-0 py-16">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-4 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    Practice evaluated
+  </div>
+  <h1 class="font-display font-medium text-3xl mb-8 fade-in">{{ competency.name }}</h1>
+
+  <div class="flex items-center gap-6 mb-8 fade-in">
+    <div class="text-center">
+      <div class="font-mono text-3xl text-slate-400">{{ score_before }}/5</div>
+      <div class="text-xs text-slate-400 mt-1">Before</div>
+    </div>
+    <div class="text-2xl text-slate-300 dark:text-slate-600">→</div>
+    <div class="text-center">
+      <div class="font-mono text-3xl font-semibold {% if met %}text-emerald-500{% else %}text-blue-600 dark:text-sky-400{% endif %}">{{ score_after }}/5</div>
+      <div class="text-xs text-slate-400 mt-1">After</div>
+    </div>
+    <div class="ml-4 font-mono text-xs text-slate-400">Required: {{ required }}/5</div>
+  </div>
+
+  <div class="border border-slate-200 dark:border-white/10 rounded-2xl p-6 bg-white dark:bg-[#10152A] mb-10 fade-in">
+    <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Evidence</div>
+    <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ evidence }}</p>
+  </div>
+
+  {% if met %}
+    <div class="border border-emerald-200 dark:border-emerald-400/20 bg-emerald-50/60 dark:bg-emerald-400/5 rounded-2xl p-6 fade-in">
+      <p class="text-sm text-emerald-700 dark:text-emerald-400">Threshold met — this competency no longer needs work. Skillz will move you to your next weakest gap.</p>
+    </div>
+  {% else %}
+    <div class="border border-amber-200 dark:border-amber-400/20 bg-amber-50/60 dark:bg-amber-400/5 rounded-2xl p-6 fade-in">
+      <p class="text-sm text-amber-700 dark:text-amber-400">Still below the required level — you can practice again.</p>
+    </div>
+  {% endif %}
+
+  <a href="{% url 'gap_profile' %}"
+     class="inline-flex items-center gap-2 mt-10 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition fade-in">
+    Back to your profile →
+  </a>
+
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "core/base.html" %}
+{% block title %}Practice — {{ competency.name }} — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-6 lg:px-0 py-16">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-4 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    Practice
+  </div>
+  <h1 class="font-display font-medium text-3xl mb-3 fade-in">{{ competency.name }}</h1>
+  <p class="text-slate-600 dark:text-slate-400 mb-10 fade-in">
+    Currently {{ score_before }}/5. This task targets the exact gap from the lesson.
+  </p>
+
+  <div class="border border-slate-200 dark:border-white/10 rounded-2xl p-6 bg-white dark:bg-[#10152A] mb-6 fade-in">
+    <p class="text-sm font-medium whitespace-pre-line">{{ practice_task.prompt }}</p>
+  </div>
+
+  <form method="post" class="fade-in">
+    {% csrf_token %}
+    <textarea name="answer" rows="6" placeholder="Type your answer here…"></textarea>
+    <button type="submit"
+            class="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition">
+      Submit practice →
+    </button>
+  </form>
+
+</div>
+{% endblock %}

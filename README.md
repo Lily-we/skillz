@@ -24,35 +24,51 @@ key" → "Create API key". No billing needed for the free tier.
 ## What's here so far
 
 - `core/models.py` — the data model: Competency (base vs company-specific),
-  AssessmentTask, Candidate (tied 1:1 to a Django User), AssessmentAnswer,
-  AssessmentResult, LearningModule, LearningPathItem
-- `core/services/gemini_service.py` — the only file that calls Gemini.
-  Takes a task prompt + rubric + candidate answer, returns structured JSON
-  `{score, evidence, gap_reason}`. Falls back to a clearly-labeled mocked
-  result if `GEMINI_API_KEY` isn't set, so the rest of the app stays
-  demoable without the key.
-- `core/management/commands/seed_company_x.py` — seeds the whole Company X
-  profile + assessment tasks + learning module pool. Safe to rerun.
-- Full page flow, all working end to end (verified via curl, not just
-  "no errors"):
-  - `/` — landing
-  - `/register/`, `/login/`, `/logout/` — real Django auth; a Candidate
-    is auto-created for every new User via a signal
-  - `/requirements/` — Company X's 11 competencies, base vs company-specific
-  - `/assessment/` — the 6 assessed tasks, submits to Gemini (or the mock)
-  - `/gap-profile/` — readiness %, per-competency gap, biggest gap
-  - `/learning-path/` — generated from actual gaps, base gaps before
-    company-specific ones
-  - `/readiness/` — interview handoff screen
-- `core/templates/core/base.html` — Tailwind CDN + tsParticles, dark/light
-  toggle persisted in localStorage, blue-only palette throughout
+  AssessmentTask + RubricCriterion (multi-criterion for REST APIs/SQL),
+  Candidate (tied 1:1 to a Django User, with optional profile fields),
+  AssessmentAnswer, AssessmentResult + CriterionResult, LearningModule,
+  LearningPathItem, DocumentationSource, LearningContent, PracticeTask,
+  PracticeAttempt
+- `core/services/gemini_service.py` — the only file that calls Gemini:
+  - `evaluate_answer()` — single-score or (if `criteria` passed)
+    per-criterion evaluation; the final score is always derived
+    deterministically in Python from Gemini's verdicts, never asked
+    for directly
+  - `generate_learning_content()` — grounds the lesson in real doc URLs
+    via Gemini's `url_context` tool, targeted at the candidate's
+    specific gap, not a general course
+  - Both fall back to clearly-labeled mocked output if `GEMINI_API_KEY`
+    isn't set
+- `core/services/scoring.py` — deterministic gap/match-% math, shared by
+  the candidate gap profile and the employer dashboard so they can never
+  disagree
+- `core/management/commands/seed_company_x.py` — seeds Company X's full
+  profile: 11 competencies, 6 assessment tasks, rubric criteria + doc
+  sources + practice tasks for REST APIs and SQL (the two competencies
+  with the full learn→practice→reassess loop, per MVP scope)
+- Full page flow, verified end to end via curl with a real DB:
+  - `/` `/register/` `/login/` `/logout/` — landing + real Django auth
+  - `/requirements/` — Company X's 11 competencies
+  - `/assessment/` — 6 tasks; REST APIs/SQL show per-criterion evaluation
+  - `/gap-profile/` — readiness %, per-competency gap, criteria chips,
+    "Start personalized learning" link where the full loop exists
+  - `/learning/<id>/` — Gemini-generated lesson grounded in official docs
+  - `/practice/<id>/` — practice task; submitting re-scores the
+    competency in place (capped at +1 level per attempt, never jumps
+    straight to mastery)
+  - `/learning-path/`, `/readiness/` — unchanged from before
+  - `/dashboard/` — employer view, candidates ranked by match %
+  - `/candidates/<id>/` — full profile + evidence + development path +
+    "Contact Skillz" placeholder
 
 ## Still to build
 
-- Visual polish pass — screens are functionally correct but plain
-- Gemini-assisted module *selection* (currently deterministic ordering
-  by gap size — matches the "should have" tier, not "must have")
-- Reassessment flow
+- Visual polish pass
+- Candidate profile edit form (fields exist on the model; no UI to fill
+  them in yet — currently editable only via `/admin/`)
+- "Move to next weakest gap" isn't automatic yet — after a practice
+  attempt, the candidate goes back to the gap profile and picks manually
+- Reassessment for competencies outside REST APIs/SQL
 
 ## Security note
 

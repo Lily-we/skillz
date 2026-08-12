@@ -57,6 +57,16 @@ class Candidate(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Profile fields — deliberately optional. Skillz doesn't assume a
+    # traditional CS-degree background; these are shown to employers for
+    # context but never used to compute competency scores.
+    bio = models.TextField(blank=True)
+    education = models.TextField(blank=True, help_text="Formal, self-taught, bootcamp, career switch — whatever applies")
+    experience = models.TextField(blank=True)
+    projects = models.TextField(blank=True)
+    technologies = models.TextField(blank=True, help_text="Comma-separated or free text")
+    certifications = models.TextField(blank=True)
+
     def __str__(self):
         return self.user.username
 
@@ -109,3 +119,104 @@ class LearningPathItem(models.Model):
 
     class Meta:
         ordering = ["order"]
+
+
+# ---------------------------------------------------------------------
+# Multi-criterion rubrics. Only used for competencies that get the full
+# learn -> practice -> reassess loop (REST APIs, SQL for this MVP) — see
+# PracticeTask below. Other competencies keep the simpler single-score
+# AssessmentResult from evaluate_answer() without criteria.
+# ---------------------------------------------------------------------
+
+class RubricCriterion(models.Model):
+    """One checkable thing a good answer demonstrates, e.g. 'Uses correct HTTP method'."""
+    task = models.ForeignKey(AssessmentTask, on_delete=models.CASCADE, related_name="criteria")
+    text = models.CharField(max_length=200)
+    order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return self.text
+
+
+class CriterionResult(models.Model):
+    """Gemini's per-criterion verdict for one AssessmentResult."""
+    STATUS_MET = "met"
+    STATUS_PARTIAL = "partial"
+    STATUS_MISSING = "missing"
+    STATUS_CHOICES = [
+        (STATUS_MET, "Met"),
+        (STATUS_PARTIAL, "Partially demonstrated"),
+        (STATUS_MISSING, "Missing"),
+    ]
+
+    result = models.ForeignKey(AssessmentResult, on_delete=models.CASCADE, related_name="criterion_results")
+    criterion = models.ForeignKey(RubricCriterion, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
+    note = models.CharField(max_length=300, blank=True)
+
+
+# ---------------------------------------------------------------------
+# Trusted knowledge sourcing. Gemini is grounded against these live via
+# the URL context tool — it doesn't invent explanations from training
+# memory, and we don't maintain our own copy of the docs.
+# ---------------------------------------------------------------------
+
+class DocumentationSource(models.Model):
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE, related_name="doc_sources")
+    title = models.CharField(max_length=150)
+    url = models.URLField()
+
+    def __str__(self):
+        return self.title
+
+
+# ---------------------------------------------------------------------
+# The learn -> practice -> reassess loop. Fully built for a small subset
+# of competencies per the MVP scope decision; others stop at the gap
+# profile.
+# ---------------------------------------------------------------------
+
+class LearningContent(models.Model):
+    """A Gemini-generated lesson, targeted at one candidate's specific gap. Cached, not regenerated per view."""
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="learning_contents")
+    competency = models.ForeignKey(Competency, on_delete=models.CASCADE)
+
+    why_it_matters = models.TextField()
+    concept = models.TextField()
+    explanation = models.TextField()
+    example = models.TextField()
+    reasoning = models.TextField()
+    common_mistake = models.TextField()
+    key_knowledge = models.TextField()
+
+    generated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("candidate", "competency")
+
+
+class PracticeTask(models.Model):
+    """The hands-on task a candidate does after the lesson, for one competency."""
+    competency = models.OneToOneField(Competency, on_delete=models.CASCADE, related_name="practice_task")
+    prompt = models.TextField()
+    rubric = models.TextField()
+
+    def __str__(self):
+        return f"Practice: {self.competency.name}"
+
+
+class PracticeAttempt(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="practice_attempts")
+    task = models.ForeignKey(PracticeTask, on_delete=models.CASCADE)
+    answer_text = models.TextField()
+    score_before = models.PositiveSmallIntegerField()
+    score_after = models.PositiveSmallIntegerField()
+    evidence = models.TextField()
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-submitted_at"]
+

@@ -1,0 +1,66 @@
+{% extends "core/base.html" %}
+{% block title %}{{ competency.name }} — Learning — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-6 lg:px-0 py-16">
+
+  <div class="font-mono text-xs tracking-widest uppercase text-blue-600 dark:text-sky-400 flex items-center gap-3 mb-4 fade-in">
+    <span class="w-4 h-px bg-blue-600 dark:bg-sky-400"></span>
+    Personalized for your gap
+  </div>
+  <h1 class="font-display font-medium text-4xl mb-2 fade-in">{{ content.concept }}</h1>
+  <p class="text-sm text-slate-500 dark:text-slate-400 mb-12 fade-in">
+    {{ competency.name }} · {{ result.score }}/5 current → {{ competency.required_level }}/5 required
+  </p>
+
+  <div class="space-y-10 fade-in">
+    <section>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Why this matters</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ content.why_it_matters }}</p>
+    </section>
+
+    <section>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Explanation</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ content.explanation }}</p>
+    </section>
+
+    <section>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Example</div>
+      <pre class="text-sm bg-slate-900 dark:bg-black/40 text-slate-100 rounded-xl p-4 overflow-x-auto whitespace-pre-wrap">{{ content.example }}</pre>
+    </section>
+
+    <section>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Reasoning</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ content.reasoning }}</p>
+    </section>
+
+    <section class="border border-amber-200 dark:border-amber-400/20 bg-amber-50/60 dark:bg-amber-400/5 rounded-2xl p-5">
+      <div class="font-mono text-[11px] uppercase tracking-widest text-amber-600 dark:text-amber-400 mb-2">What your answer showed</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ content.common_mistake }}</p>
+    </section>
+
+    <section class="border-l-2 border-blue-600 dark:border-sky-400 pl-4">
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Key knowledge</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{{ content.key_knowledge }}</p>
+    </section>
+  </div>
+
+  {% if doc_sources %}
+  <div class="mt-10 pt-6 border-t border-slate-200 dark:border-white/10 fade-in">
+    <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-3">Grounded in</div>
+    <div class="flex flex-wrap gap-3">
+      {% for src in doc_sources %}
+      <a href="{{ src.url }}" target="_blank" rel="noopener"
+         class="text-xs font-mono text-blue-600 dark:text-sky-400 hover:underline">{{ src.title }} ↗</a>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="{% url 'practice' competency.id %}"
+     class="inline-flex items-center gap-2 mt-10 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition fade-in">
+    Practice this →
+  </a>
+
+</div>
+{% endblock %}

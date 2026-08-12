@@ -1,0 +1,85 @@
+{% extends "core/base.html" %}
+{% block title %}{{ candidate.user.username }} — Skillz{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 lg:px-0 py-16">
+
+  <a href="{% url 'dashboard' %}" class="font-mono text-xs text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 mb-6 inline-block fade-in">← Back to dashboard</a>
+
+  <div class="flex items-end justify-between mb-10 fade-in">
+    <div>
+      <h1 class="font-display font-medium text-4xl mb-1">{{ candidate.user.username }}</h1>
+      <p class="text-slate-500 dark:text-slate-400 text-sm">Junior Python Developer candidate</p>
+    </div>
+    <div class="text-right font-mono">
+      <div class="text-3xl font-semibold text-blue-600 dark:text-sky-400">{{ match_pct }}%</div>
+      <div class="text-xs text-slate-400">match</div>
+    </div>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-8 mb-12 fade-in">
+    <div>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Bio</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300">{{ candidate.bio|default:"Not provided" }}</p>
+    </div>
+    <div>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Education</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300">{{ candidate.education|default:"Not provided" }}</p>
+    </div>
+    <div>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Experience</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300">{{ candidate.experience|default:"Not provided" }}</p>
+    </div>
+    <div>
+      <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-2">Projects</div>
+      <p class="text-sm text-slate-700 dark:text-slate-300">{{ candidate.projects|default:"Not provided" }}</p>
+    </div>
+  </div>
+
+  <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-4 fade-in">Skillz competency evidence</div>
+  <div class="space-y-1 mb-12 fade-in">
+    {% for row in rows %}
+    <div class="py-4 border-b border-slate-100 dark:border-white/5">
+      <div class="flex justify-between mb-2">
+        <div class="text-sm font-medium">{{ row.competency.name }}</div>
+        <div class="font-mono text-xs text-slate-500 dark:text-slate-400">
+          <span class="font-semibold text-slate-700 dark:text-slate-200">{{ row.current }}/5</span> demonstrated ·
+          {{ row.required }}/5 required
+          {% if row.gap > 0 %}<span class="text-red-500 dark:text-red-400">· gap −{{ row.gap }}</span>{% endif %}
+        </div>
+      </div>
+      <div class="gauge-track bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10">
+        <div class="h-full rounded-md {% if row.gap > 0 %}bg-red-400 dark:bg-red-400/80{% else %}bg-emerald-500{% endif %}"
+             style="width: {{ row.current|floatformat:0 }}0%"></div>
+        <div class="gauge-tick" style="left: {{ row.required|floatformat:0 }}0%"></div>
+      </div>
+      <p class="text-xs text-slate-400 mt-2">{{ row.evidence }}</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if practice_history %}
+  <div class="font-mono text-[11px] uppercase tracking-widest text-slate-400 mb-4 fade-in">Development path</div>
+  <div class="space-y-3 mb-12 fade-in">
+    {% for attempt in practice_history %}
+    <div class="flex items-center gap-4 text-sm">
+      <span class="font-medium w-32">{{ attempt.task.competency.name }}</span>
+      <span class="font-mono text-slate-400">{{ attempt.score_before }}/5 → {{ attempt.score_after }}/5</span>
+      <span class="text-xs text-slate-400">{{ attempt.submitted_at|date:"M j" }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="border border-blue-200 dark:border-sky-400/20 bg-blue-50/60 dark:bg-sky-400/5 rounded-2xl p-6 flex justify-between items-center fade-in">
+    <div>
+      <div class="font-mono text-xs uppercase tracking-widest text-blue-600 dark:text-sky-400 mb-1">Interested in this candidate?</div>
+      <p class="text-sm text-slate-600 dark:text-slate-400">Skillz facilitates the introduction.</p>
+    </div>
+    <button class="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 dark:bg-sky-400 dark:hover:bg-sky-300 text-white dark:text-slate-950 font-mono text-sm font-semibold transition whitespace-nowrap">
+      Contact Skillz →
+    </button>
+  </div>
+
+</div>
+{% endblock %}

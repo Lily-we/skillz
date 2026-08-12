@@ -1,7 +1,14 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from core.models import AssessmentTask, Competency, LearningModule
+from core.models import (
+    AssessmentTask,
+    Competency,
+    DocumentationSource,
+    LearningModule,
+    PracticeTask,
+    RubricCriterion,
+)
 
 
 # Company X — Junior Python Developer.
@@ -44,6 +51,28 @@ BASE_COMPETENCIES = [
             ("SQL joins and aggregation", 20),
             ("Practical query-writing drills", 25),
         ],
+        # SQL gets the full loop — see MVP scope: multi-criterion rubric,
+        # doc-grounded learning content, and a practice/reassess step.
+        "criteria": [
+            "Uses a JOIN between orders and customers",
+            "Uses GROUP BY with SUM() to aggregate spend per customer",
+            "Uses ORDER BY to sort by spend descending",
+            "Uses LIMIT to return exactly 5 rows",
+        ],
+        "doc_sources": [
+            ("PostgreSQL: SELECT / JOIN tutorial", "https://www.postgresql.org/docs/current/tutorial-join.html"),
+            ("PostgreSQL: Aggregate functions", "https://www.postgresql.org/docs/current/tutorial-agg.html"),
+        ],
+        "practice": {
+            "prompt": "Given tables `products(id, name)` and `order_items(id, "
+                       "order_id, product_id, quantity)`, write a query that "
+                       "returns each product name with the total quantity sold "
+                       "across all orders, sorted highest first.",
+            "rubric": "Correct JOIN between order_items and products. Correct "
+                       "GROUP BY product with SUM(quantity). Correct ORDER BY "
+                       "descending. A gap is missing the JOIN, missing "
+                       "GROUP BY, or wrong aggregation.",
+        },
     },
     {
         "name": "REST APIs",
@@ -61,6 +90,29 @@ BASE_COMPETENCIES = [
             ("REST API design conventions", 15),
             ("Status codes and error handling", 15),
         ],
+        # REST APIs gets the full loop too — this is the demo's centerpiece
+        # per the product spec's own example scenario.
+        "criteria": [
+            "Uses correct HTTP methods for each action (POST create, GET list, PATCH/PUT update, DELETE remove)",
+            "Uses resource-based, RESTful paths (e.g. /tasks, /tasks/{id}) rather than verb-based paths",
+            "Mentions appropriate HTTP status codes for at least one action",
+            "Can explain the reasoning behind at least one design choice",
+        ],
+        "doc_sources": [
+            ("MDN: HTTP request methods", "https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods"),
+            ("MDN: HTTP response status codes", "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status"),
+        ],
+        "practice": {
+            "prompt": "Describe a REST endpoint for retrieving a single user's "
+                       "profile by ID, and a separate endpoint for updating "
+                       "their email address. For each, give the HTTP method, "
+                       "path, and the status code you'd return on success and "
+                       "on 'not found'.",
+            "rubric": "GET /users/{id} for retrieval, with 200 on success and "
+                       "404 if not found. PATCH (or PUT) /users/{id} for the "
+                       "update, with 200 on success and 404 if not found. A gap "
+                       "is using POST for either action, or omitting status codes.",
+        },
     },
     {
         "name": "Git",
@@ -149,7 +201,7 @@ class Command(BaseCommand):
                     order=i,
                 )
                 if item["assessed_in_demo"]:
-                    AssessmentTask.objects.create(
+                    task = AssessmentTask.objects.create(
                         competency=comp,
                         prompt=item["task_prompt"],
                         rubric=item["rubric"],
@@ -157,6 +209,20 @@ class Command(BaseCommand):
                     for title, minutes in item.get("modules", []):
                         LearningModule.objects.create(
                             competency=comp, title=title, duration_minutes=minutes
+                        )
+                    for j, criterion_text in enumerate(item.get("criteria", [])):
+                        RubricCriterion.objects.create(
+                            task=task, text=criterion_text, order=j
+                        )
+                    for title, url in item.get("doc_sources", []):
+                        DocumentationSource.objects.create(
+                            competency=comp, title=title, url=url
+                        )
+                    if item.get("practice"):
+                        PracticeTask.objects.create(
+                            competency=comp,
+                            prompt=item["practice"]["prompt"],
+                            rubric=item["practice"]["rubric"],
                         )
                 self.stdout.write(f"  {scope}: {comp.name} (required {comp.required_level})")
 

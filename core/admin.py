@@ -6,8 +6,14 @@ from .models import (
     AssessmentTask,
     Candidate,
     Competency,
+    CriterionResult,
+    DocumentationSource,
+    LearningContent,
     LearningModule,
     LearningPathItem,
+    PracticeAttempt,
+    PracticeTask,
+    RubricCriterion,
 )
 
 
@@ -20,6 +26,11 @@ class CompetencyAdmin(admin.ModelAdmin):
 @admin.register(AssessmentTask)
 class AssessmentTaskAdmin(admin.ModelAdmin):
     list_display = ("competency",)
+
+
+@admin.register(RubricCriterion)
+class RubricCriterionAdmin(admin.ModelAdmin):
+    list_display = ("task", "text", "order")
 
 
 @admin.register(Candidate)
@@ -37,6 +48,16 @@ class AssessmentResultAdmin(admin.ModelAdmin):
     list_display = ("answer", "score", "gap")
 
 
+@admin.register(CriterionResult)
+class CriterionResultAdmin(admin.ModelAdmin):
+    list_display = ("result", "criterion", "status")
+
+
+@admin.register(DocumentationSource)
+class DocumentationSourceAdmin(admin.ModelAdmin):
+    list_display = ("competency", "title", "url")
+
+
 @admin.register(LearningModule)
 class LearningModuleAdmin(admin.ModelAdmin):
     list_display = ("title", "competency", "duration_minutes")
@@ -45,3 +66,18 @@ class LearningModuleAdmin(admin.ModelAdmin):
 @admin.register(LearningPathItem)
 class LearningPathItemAdmin(admin.ModelAdmin):
     list_display = ("candidate", "module", "order")
+
+
+@admin.register(LearningContent)
+class LearningContentAdmin(admin.ModelAdmin):
+    list_display = ("candidate", "competency", "generated_at")
+
+
+@admin.register(PracticeTask)
+class PracticeTaskAdmin(admin.ModelAdmin):
+    list_display = ("competency",)
+
+
+@admin.register(PracticeAttempt)
+class PracticeAttemptAdmin(admin.ModelAdmin):
+    list_display = ("candidate", "task", "score_before", "score_after", "submitted_at")
